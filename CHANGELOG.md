@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.x-1.0.0-beta2 (unreleased)
+## 1.x-1.0.0-beta3 (unreleased)
+
+## 1.x-1.0.0-beta2 (2026-11-04)
+
+Git tag: `1.x-1.0.0-beta2`.
 
 ### Added
 - Items the user may no longer buy (restricted after adding, or role lost) are removed from the cart with a message.
