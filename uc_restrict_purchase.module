@@ -292,6 +292,44 @@ function uc_restrict_purchase_uc_add_to_cart($nid, $qty, $data) {
 }
 
 /**
+ * Implements hook_uc_cart_alter().
+ *
+ * Removes items the user may no longer buy: added before the product was
+ * restricted, or before the user lost the role (e.g. an expired membership).
+ * Ubercart loads the cart before every cart page and checkout step, so the
+ * item cannot reach an order. Only the current user's own cart is touched.
+ */
+function uc_restrict_purchase_uc_cart_alter(&$items) {
+  if (empty($items) || !($cart_id = uc_cart_get_id(FALSE))) {
+    return;
+  }
+
+  $removed = array();
+  foreach ($items as $key => $item) {
+    if (!isset($item->cart_id) || $item->cart_id != $cart_id) {
+      continue;
+    }
+    $node = node_load($item->nid);
+    if ($node && !uc_restrict_purchase_allowed($node)) {
+      $removed[$item->cart_item_id] = $node->title;
+      unset($items[$key]);
+    }
+  }
+  if (!$removed) {
+    return;
+  }
+
+  entity_delete_multiple('uc_cart_item', array_keys($removed));
+  // Any order already started from this cart must be rebuilt without them.
+  $_SESSION['uc_cart_order_rebuild'] = TRUE;
+
+  $message = uc_restrict_purchase_message();
+  foreach (array_unique($removed) as $title) {
+    backdrop_set_message(t('%title has been removed from your cart.', array('%title' => $title)) . ($message !== '' ? ' ' . $message : ''), 'warning');
+  }
+}
+
+/**
  * Determines whether an account may buy a product.
  *
  * @param Node $node

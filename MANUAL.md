@@ -30,12 +30,14 @@ unless the code sets `$node->uc_restrict_purchase_roles`.
 - Catalog and Views "Add to cart" / "Buy it now" buttons: replaced by the
   message or button.
 - Any add to cart (forms, `cart/add/...` links): refused with the message.
+- The cart and checkout: an item the user can no longer buy (added before the
+  product was restricted, or before the user lost the role, e.g. when a
+  membership expires) is removed, with "<product> has been removed from your
+  cart." and the message.
 
 ## Limits
 
 - Prices shown in Views fields are not hidden.
-- An item already in a cart is not removed if the user later loses the role
-  (for example when a membership expires).
 
 ## Styling
 
